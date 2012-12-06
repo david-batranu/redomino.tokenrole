@@ -38,7 +38,7 @@ class TokenRolesAnnotateAdapter(object):
     def __init__(self, context):
         self.annotations = IAnnotations(context).setdefault(ANNOTATIONS_KEY,
                                                            PersistentDict())
-    
+
     @apply
     def token_dict():
         def get(self):
@@ -87,8 +87,8 @@ class TokenInfoSchema(object):
             self.annotation.token_dict[self.token_id]['token_roles'] = value
         return property(getter, setter)
 
-        
-        
+
+
 
 class TokenRolesLocalRolesProviderAdapter(object):
     implements(ILocalRoleProvider)
@@ -110,14 +110,13 @@ class TokenRolesLocalRolesProviderAdapter(object):
             expire_date = tr_annotate.token_dict[token].get('token_end')
             roles_to_assign = tr_annotate.token_dict[token].get('token_roles', ('Reader',))
             if expire_date.replace(tzinfo=None) > datetime.now():
-                if not request.cookies.has_key('token'):
-                    physical_path = self.context.getPhysicalPath()
-                    # Is there a better method for calculate the url_path?
-                    url_path = '/' + '/'.join(request.physicalPathToVirtualPath(physical_path))
-                    response.setCookie(name='token', 
-                                       value=token, 
-                                       expires=dt2DT(expire_date).toZone('GMT').rfc822(), 
-                                       path=url_path)
+                physical_path = self.context.getPhysicalPath()
+                # Is there a better method for calculate the url_path?
+                url_path = '/' + '/'.join(request.physicalPathToVirtualPath(physical_path))
+                response.setCookie(name='token',
+                                   value=token,
+                                   expires=dt2DT(expire_date).toZone('GMT').rfc822(),
+                                   path=url_path)
                 return roles_to_assign
         return ()
 

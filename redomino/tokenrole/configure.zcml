@@ -2,6 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:five="http://namespaces.zope.org/five"
     xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="redomino.tokenrole">
 
@@ -24,7 +25,7 @@
     <class class="Products.ATContentTypes.content.base.ATCTContent">
         <implements interface=".interfaces.ITokenRolesProviding" />
     </class>
-    
+
     <!-- Register profile-->
     <genericsetup:registerProfile
         name="default"
@@ -36,7 +37,7 @@
 
     <!-- Adapters -->
     <adapter factory=".tokenroleprovider.TokenInfoSchema" />
-    <adapter 
+    <adapter
         for=".interfaces.ITokenRolesProviding"
         provides=".interfaces.ITokenRolesAnnotate"
         factory=".tokenroleprovider.TokenRolesAnnotateAdapter"/>
@@ -44,6 +45,18 @@
     <adapter
         for="Products.CMFCore.interfaces.IContentish"
         factory=".tokenroleprovider.TokenRolesLocalRolesProviderAdapter"
+        />
+
+
+    <!-- Patches -->
+    <include package="collective.monkeypatcher" />
+
+    <monkey:patch
+        description="Patching catalog search to include user token"
+        class="Products.CMFPlone.CatalogTool.CatalogTool"
+        original="_listAllowedRolesAndUsers"
+        preserveOriginal="true"
+        replacement=".patches.patched__listAllowedRolesAndUsers"
         />
 
 
